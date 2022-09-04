@@ -2,7 +2,7 @@ import {ufs} from 'unionfs'
 import {IFS} from 'unionfs/lib/fs'
 import {createFsFromVolume, Volume} from 'memfs'
 
-import mountFromFs from "./mount-from-fs"
+import mountFromFs from './mount-from-fs.js'
 
 type Mount = string | [string, string]
 
