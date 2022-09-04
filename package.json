@@ -31,11 +31,8 @@
     "unionfs": "^4.4.0"
   },
   "scripts": {
-    "postinstall": "npm run build",
     "build": "babel src --extensions \".js,.ts\" --out-dir lib",
-    "build-example": "babel example --extensions \".js,.ts\" --out-dir example-lib",
     "watch": "babel src --watch --extensions \".js,.ts\" --out-dir lib",
-    "watch-example": "babel example --watch --extensions \".js,.ts\" --out-dir example-lib",
     "test": "jest"
   },
   "jest": {

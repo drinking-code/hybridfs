@@ -1,57 +1,41 @@
-# linkfs
+# hybridfs
 
-Redirects filesystem paths.
+Basically [`memfs`](https://github.com/streamich/memfs), but you can mount directories from the native nodejs
+filesystem.  
+Install with:
 
-[![][npm-img]][npm-url] [![][travis-badge]][travis-url]
-
-    npm install --save linkfs
-
-```js
-import {link} from 'linkfs';
-import {fs} from 'memfs';
-
-fs.writeFileSync('/foo', 'bar');
-const lfs = link(fs, ['/foo2', '/foo']);
-console.log(lfs.readFileSync('/foo2', 'utf8')); // bar
+```shell
+npm i drinking-code/hybridfs
 ```
 
-# Reference
-
-### `link(fs, rewrites)`
-
-Returns a new *fs-like* object with redirected file paths.
-
-`fs` is the source *fs-like* object.
-
-`rewrites` is a 2-tuple or an array of 2-tuples, where each 2-tuple
-has a form of `[from, to]`. `from` is the new, *virtual* path; and `to`
-is an existing path in the `fs` filesystem.
+Use like:
 
 ```js
-const lfs = link(fs, ['/foo', '/bar']);
+import createHybridFs from 'hybridfs'
+
+// create in-memory fs with "./node_modules" from the node:fs mounted to "/node_modules"
+const hfs = createHybridFs([
+    ['node_modules', '/node_modules']
+])
+
+hfs.writeFileSync('/foo', 'bar') // writes to the in-memory fs
+console.log(
+    hfs.readFileSync('/foo', 'utf8')
+) // -> "bar"
 ```
 
-or
+Uses `memfs`' API ([Node's `fs` API](https://nodejs.org/api/fs.html)) for the file system.
 
-```js
-const lfs = link(fs, [
-    ['/foo1', '/bar1'],
-    ['/foo2', '/bar2'],
-    ['/foo3', '/bar3'],
-]);
-```
+## Reference
 
-[npm-url]: https://www.npmjs.com/package/linkfs
-[npm-img]: https://img.shields.io/npm/v/linkfs.svg
-[memfs]: https://github.com/streamich/memfs
-[unionfs]: https://github.com/streamich/unionfs
-[linkfs]: https://github.com/streamich/linkfs
-[fs-monkey]: https://github.com/streamich/fs-monkey
-[travis-url]: https://travis-ci.org/streamich/linkfs
-[travis-badge]: https://travis-ci.org/streamich/linkfs.svg?branch=master
+### `createHybridFs(rewrites: (string | [string, string])[])`
 
+Create a hybrid file system. Accepts an array of mounts where one mount is either
 
+- a string: "/foo" mounts "/foo" from the native filesystem to "/foo" in the in-memory filesystem; or
+- an array of two strings: ["/foo", "/bar"] mounts "/foo" from the native filesystem to "/bar" in the in-memory
+  filesystem.
 
-# License
+Both types can be mixed in the array.
 
-[Unlicense](./LICENSE) - public domain.
+Returns a hybrid file system.
