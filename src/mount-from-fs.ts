@@ -6,7 +6,7 @@ import {props, rewritableMethods, proxyableMethods} from './methods-props.js'
 export default function mountFromFs(rewrites: [string, string][]) {
     const resolvedRewrites: [string, string][] = []
     for (const [from, to] of rewrites as [string, string][]) {
-        resolvedRewrites.push([resolve(from), resolve(to)])
+        resolvedRewrites.push([resolve(from), to])
     }
 
     let lfs = {}
@@ -29,7 +29,7 @@ export default function mountFromFs(rewrites: [string, string][]) {
             }
 
             // Rewrite the path argument.
-            let filename: string = resolve(String(path))
+            let filename: string = String(path)
             let rewritten: boolean = false
             for (const [from, to] of resolvedRewrites) {
                 if (!filename.startsWith(to)) continue
@@ -47,8 +47,10 @@ export default function mountFromFs(rewrites: [string, string][]) {
                 rewritten = true
             }
 
-            if (!rewritten)
-                return func.apply('/not-an-existing-file', args)
+            if (!rewritten) {
+                args[0] = '/not-an-existing-file'
+                return func.apply(fs, args)
+            }
 
             args[0] = filename
             return func.apply(fs, args)

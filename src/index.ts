@@ -22,6 +22,6 @@ export default function createHybridFs(mounts: Mount[]) {
         )
     )
     return ufs
-        .use(fs)
         .use(vfs)
+        .use(fs)
 }
