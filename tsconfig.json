@@ -14,7 +14,7 @@
     "noUnusedLocals": false,
     "strictNullChecks": false
   },
-  "inlude": [
+  "include": [
     "src/**/*"
   ],
   "exclude": [
