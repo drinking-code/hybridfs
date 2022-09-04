@@ -1,62 +1,43 @@
-import {mountFromFs} from '../mount-from-fs';
-import {Volume} from 'memfs';
+import createHybridFs from '../'
 
-
-describe('rewrite(fs, rewrites)', () => {
+describe('mountFromFs(rewrites)', () => {
     it('Simple rewrite', () => {
-        const vol = Volume.fromJSON({'/foo': 'bar'});
-        const lfs = mountFromFs(vol, ['/lol', '/foo']);
-        expect(lfs.readFileSync('/lol', 'utf8')).toBe('bar');
-    });
+        const hfs = createHybridFs([['.test_files', '/']])
+        expect(hfs.readFileSync('/file1', 'utf8')).toBe("hello world!\n")
+    })
 
     it('Each path step should be rewritten completely', () => {
-        const vol = Volume.fromJSON({'/foo/bar': 'hello'});
-        const lfs = mountFromFs(vol, ['/lol', '/fo']);
-        let hello;
+        const hfs = createHybridFs([['.test_', '/test_']])
+        let fileContents
         try {
-            hello = lfs.readFileSync('/lolo/bar', 'utf8');
-            throw Error('This should not throw');
+            fileContents = hfs.readFileSync('/test_files/file1', 'utf8')
+            throw new Error('This should not throw')
         } catch(err) {
-            expect(err.code).toBe('ENOENT');
+            expect(err.code).toBe('ENOENT')
         }
-    });
+    })
 
     it('Invalid rewrite routes argument throws', () => {
-        const vol = Volume.fromJSON({'/foo/bar': 'hello'});
         try {
-            const lfs = mountFromFs(vol, 123 as any);
-            throw Error('not_this');
+            const hfs = createHybridFs([['.test_files', 123 as any]])
+            throw Error('not_this')
         } catch(err) {
-            expect(err.message === 'not_this').toBe(false);
+            expect(err.message === 'not_this').toBe(false)
         }
-    });
+    })
 
     it('Invalid path argument gets proxied', () => {
-        const vol = Volume.fromJSON({'/foo/bar': 'hello'});
         try {
-            const lfs = mountFromFs(vol, ['/lol', '/foo']);
-            lfs.readFileSync(123, 'utf8');
-            throw Error('This should not throw');
+            const hfs = createHybridFs([['.test_files', '/']])
+            hfs.readFileSync(123, 'utf8')
+            throw new Error('This should not throw')
         } catch(err) {
-            expect(err.code).toBe('EBADF');
+            expect([err.code, err.prev.code]).toContain('EBADF')
         }
-    });
+    })
 
     it('rewrites multi-step paths', () => {
-        const vol = Volume.fromJSON({
-            '/1/2/3/4': 'foo'
-        });
-        const lfs = mountFromFs(vol, ['/lol', '/1/2/3']);
-
-        expect(lfs.readFileSync('/lol/4', 'utf8')).toBe('foo');
-    });
-
-    it('rewrites root path', () => {
-        const vol = Volume.fromJSON({
-            '/1/2/3/4': 'foo'
-        });
-        const lfs = mountFromFs(vol, ['/', '/1/2/3']);
-
-        expect(lfs.readFileSync('/4', 'utf8')).toBe('foo');
-    });
-});
+        const hfs = createHybridFs([['.test_files/dir1/dir2/dir3/dir4', '/files']])
+        expect(hfs.readFileSync('/files/file2', 'utf8')).toBe("hello from here, too!\n")
+    })
+})

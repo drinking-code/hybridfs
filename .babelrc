@@ -3,9 +3,5 @@
     "@babel/preset-env",
     "@babel/preset-typescript"
   ],
-  "comments": false,
-  "ignore": [
-    "spec.js",
-    "test.js"
-  ]
+  "comments": false
 }
