@@ -48,7 +48,7 @@ export default function mountFromFs(rewrites: [string, string][]) {
             }
 
             if (!rewritten)
-                throw new Error()
+                return func.apply('/not-an-existing-file', args)
 
             args[0] = filename
             return func.apply(fs, args)
