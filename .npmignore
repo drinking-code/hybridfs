@@ -2,7 +2,6 @@ example.js
 hello-world.js
 *.ts
 /typings
-example.js
 tsd.json
 simple.js
 node_modules
