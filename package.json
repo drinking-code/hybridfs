@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Hybrid between memfs and native fs",
   "main": "lib/index.js",
+  "type": "module",
   "license": "MIT",
   "keywords": [
     "fs",
@@ -33,11 +34,12 @@
   "scripts": {
     "build": "babel src --extensions \".js,.ts\" --out-dir lib",
     "watch": "babel src --watch --extensions \".js,.ts\" --out-dir lib",
-    "test": "jest"
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
   },
   "jest": {
     "testPathIgnorePatterns": [
       "src"
-    ]
+    ],
+    "transform": {}
   }
 }
